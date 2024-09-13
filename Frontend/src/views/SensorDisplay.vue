@@ -16,35 +16,41 @@
             <div class="stat-value">{{ sensorData.EMG.toFixed(2) }}</div>
           </div>
         </div>
+  
+        <!-- Tremor Chart -->
+        <TremorChart :tremorData="sensorData.tremor" />
       </div>
     </div>
   </template>
   
   <script>
   import { ref, onMounted, onUnmounted } from 'vue'
+  import TremorChart from './TremorChart.vue'
   
   export default {
     name: 'SensorDisplay',
+    components: {
+      TremorChart
+    },
     setup() {
       const sensorData = ref({ tremor: 0, BPM: 0, EMG: 0 })
       let ws
   
       const connectWebSocket = () => {
         ws = new WebSocket('ws://192.168.50.231:8000/ws')
-
+  
         ws.onopen = () => {
-            console.log("WebSocket connection established");
-        };
-
+          console.log("WebSocket connection established")
+        }
+  
         ws.onmessage = (event) => {
-            console.log("WebSocket message received:", event.data);
           sensorData.value = JSON.parse(event.data)
         }
-
+  
         ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
-
+          console.error("WebSocket error:", error)
+        }
+  
         ws.onclose = () => {
           setTimeout(connectWebSocket, 1000)
         }
@@ -62,3 +68,4 @@
     }
   }
   </script>
+  

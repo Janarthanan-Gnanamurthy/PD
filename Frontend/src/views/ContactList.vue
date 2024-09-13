@@ -1,41 +1,37 @@
 <template>
-    <div class="card shadow-xl">
+    <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h2 class="card-title">Contacts</h2>
-        <ul class="list-none">
-          <li v-for="contact in contacts" :key="contact.email" class="mb-2">
+        <ul v-if="contacts.length > 0" class="list-none">
+          <li v-for="contact in contacts" :key="contact.id" class="mb-2">
             <div class="flex justify-between items-center">
-              <span>{{ contact.name }} - {{ contact.phone }}</span>
-              <button @click="removeContact(contact)" class="btn btn-error btn-xs">Remove</button>
+              <div>
+                <span class="font-bold">{{ contact.name }}</span>
+                <span class="text-sm text-gray-500 ml-2">({{ contact.relationship }})</span>
+                <br>
+                <span class="text-sm">{{ contact.phone }} | {{ contact.email }}</span>
+              </div>
+              <div>
+                <button class="btn btn-success btn-sm mr-2">Call</button>
+                <button @click="$emit('remove-contact', contact.id)" class="btn btn-error btn-sm">Remove</button>
+                </div>
             </div>
           </li>
         </ul>
+        <div v-else >No Contacts Found</div>
       </div>
     </div>
   </template>
   
   <script>
-  import { ref, onMounted } from 'vue'
-  
   export default {
     name: 'ContactList',
-    setup() {
-      const contacts = ref([])
-  
-      const fetchContacts = async () => {
-        const response = await fetch('http://192.168.50.231:8000/patient/1/contacts')
-        contacts.value = await response.json()
+    props: {
+      contacts: {
+        type: Array,
+        required: true
       }
-  
-      const removeContact = async (contact) => {
-        // Implement remove contact logic here
-        // This would typically involve a DELETE request to your API
-        // After successful deletion, call fetchContacts() to update the list
-      }
-  
-      onMounted(fetchContacts)
-  
-      return { contacts, removeContact }
-    }
+    },
+    emits: ['remove-contact']
   }
   </script>

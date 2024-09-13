@@ -1,41 +1,56 @@
 <template>
-    <div class="card  shadow-xl">
+    <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <h2 class="card-title">Contacts</h2>
-        <ul class="list-none">
-          <li v-for="contact in contacts" :key="contact.email" class="mb-2">
-            <div class="flex justify-between items-center">
-              <span>{{ contact.name }} - {{ contact.phone }}</span>
-              <button @click="removeContact(contact)" class="btn btn-error btn-xs">Remove</button>
-            </div>
-          </li>
-        </ul>
+        <h2 class="card-title">Add Relative or Friend</h2>
+        <form @submit.prevent="addContact" class="form-control">
+          <label class="label">
+            <span class="label-text">Name</span>
+          </label>
+          <input v-model="newContact.name" type="text" placeholder="Name" class="input input-bordered w-full" required />
+          
+          <label class="label">
+            <span class="label-text">Phone</span>
+          </label>
+          <input v-model="newContact.phone" type="tel" placeholder="Phone" class="input input-bordered w-full" required />
+          
+          <label class="label">
+            <span class="label-text">Email</span>
+          </label>
+          <input v-model="newContact.email" type="email" placeholder="Email" class="input input-bordered w-full" required />
+          
+          <label class="label">
+            <span class="label-text">Relationship</span>
+          </label>
+          <select v-model="newContact.relationship" class="select select-bordered w-full" required>
+            <option disabled selected value="">Select relationship</option>
+            <option>Family</option>
+            <option>Friend</option>
+            <option>Caregiver</option>
+            <option>Doctor</option>
+            <option>Other</option>
+          </select>
+          
+          <button type="submit" class="btn btn-primary mt-4">Add Contact</button>
+        </form>
       </div>
     </div>
   </template>
   
   <script>
-  import { ref, onMounted } from 'vue'
+  import { ref } from 'vue'
   
   export default {
-    name: 'ContactList',
-    setup() {
-      const contacts = ref([])
+    name: 'AddContact',
+    emits: ['contact-added'],
+    setup(props, { emit }) {
+      const newContact = ref({ name: '', phone: '', email: '', relationship: '' })
   
-      const fetchContacts = async () => {
-        const response = await fetch('http://192.168.50.231:8000/patient/1/contacts')
-        contacts.value = await response.json()
+      const addContact = () => {
+        emit('contact-added', { ...newContact.value })
+        newContact.value = { name: '', phone: '', email: '', relationship: '' }
       }
   
-      const removeContact = async (contact) => {
-        // Implement remove contact logic here
-        // This would typically involve a DELETE request to your API
-        // After successful deletion, call fetchContacts() to update the list
-      }
-  
-      onMounted(fetchContacts)
-  
-      return { contacts, removeContact }
+      return { newContact, addContact }
     }
   }
   </script>
