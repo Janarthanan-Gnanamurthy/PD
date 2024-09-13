@@ -30,11 +30,14 @@ class Contact(BaseModel):
 
 
 patients = {}  # This would be replaced with a database in a production environment
+connected_clients = []
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    connected_clients.append(websocket)
+
     try:
         while True:
             data = await websocket.receive_text()
@@ -43,7 +46,12 @@ async def websocket_endpoint(websocket: WebSocket):
             # Process the data as needed
             # For example, you could check if the tremor value exceeds a threshold
             # if sensor_data["tremor"] > 400:  # Adjust this threshold as needed
-            #     await send_alert(sensor_data["patient_id"])
+            # await send_alert(data)
+            for ws_client in connected_clients:
+                try:
+                    await ws_client.send_text(data)
+                except:
+                    connected_clients.remove(ws_client)
     except Exception as e:
         print(f"Error: {e}")
 

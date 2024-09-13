@@ -2,7 +2,7 @@
   <div class="p-6">
     
     <h2 class="text-xl font-semibold mb-4">Real-Time EMG Measurements</h2>
-    <div class="bg-gray-100 p-4 rounded-md shadow-lg">
+    <div class=" p-4 rounded-md shadow-lg">
       <p v-if="emgMessage" class="text-lg">{{ emgMessage }}</p>
       <p v-else class="text-lg">No EMG data received yet.</p>
     </div>

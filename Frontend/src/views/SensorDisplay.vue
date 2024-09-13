@@ -1,5 +1,5 @@
 <template>
-    <div class="card bg-base-100 shadow-xl">
+    <div class="card shadow-xl">
       <div class="card-body">
         <h2 class="card-title">Sensor Readings</h2>
         <div class="grid grid-cols-3 gap-4">
@@ -31,9 +31,20 @@
   
       const connectWebSocket = () => {
         ws = new WebSocket('ws://192.168.50.231:8000/ws')
+
+        ws.onopen = () => {
+            console.log("WebSocket connection established");
+        };
+
         ws.onmessage = (event) => {
+            console.log("WebSocket message received:", event.data);
           sensorData.value = JSON.parse(event.data)
         }
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
         ws.onclose = () => {
           setTimeout(connectWebSocket, 1000)
         }
